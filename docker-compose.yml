@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mongo-local:
+    image: 'mongo:latest'
+    container_name: 'itpmongo'
+    environment:
+      - 'MONGO_INITDB_DATABASE=idea-to-process'
+      - 'MONGO_INITDB_ROOT_USERNAME=admin'
+      - 'MONGO_INITDB_ROOT_PASSWORD=pwd123!'
+    ports:
+      # localhost-port:container-port
+      - '27020:27017'
+    volumes:
+      - './docker-init-mongo.js:/docker-entrypoint-initdb.d/docker-init-mongo.js:ro'
+      - './.docker/mongodb:/data/db'

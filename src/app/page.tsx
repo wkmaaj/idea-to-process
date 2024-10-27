@@ -1,101 +1,154 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { BpmnModal, Button, ContextChat } from '@/components'
+import RequirementInput from '@/components/requirement-input'
+import { AdditionalContextType, CoreMessageType } from '@/lib'
+import Head from 'next/head'
+import { useEffect, useState } from 'react'
+
+/**
+ * Homepage (client-side).
+ *
+ * Route is `${basePath}/`
+ */
+const HomePage = () => {
+  const [userInput, setUserInput] = useState<string>('')
+  const [submitted, setSubmitted] = useState<boolean>(false)
+  const [responseMessage, setResponseMessage] = useState<string[]>([])
+  const [additionalContext, setAdditionalContext] = useState<
+    AdditionalContextType[]
+  >([])
+  const [bpmnData, setBpmnData] = useState<string>('')
+  const [coreMessages, setCoreMessages] = useState<CoreMessageType[]>([])
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+
+  const handleSubmit = async () => {
+    const messages: CoreMessageType[] = [{ role: 'user', content: userInput }]
+    additionalContext.forEach((ctxEntry) => {
+      messages.push({ role: 'assistant', content: ctxEntry.question })
+      messages.push({ role: 'user', content: ctxEntry.answer })
+    })
+    setCoreMessages(messages)
+
+    try {
+      const response = await fetch('/api/llama', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messages: messages,
+          data: { requirement: userInput }
+        })
+      })
+
+      const data = await response.json()
+      console.log(data)
+      setBpmnData(data.xml)
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      setResponseMessage(['Error submitting data'])
+    }
+  }
+
+  const handleStructuredSubmit = async () => {
+    console.log('User input:', userInput)
+
+    try {
+      const response = await fetch('/api/llama/structured', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: userInput }],
+          data: { contextPrompt: true }
+        })
+      })
+
+      setSubmitted(true)
+
+      const data = await response.json()
+      console.log(data)
+      if (response.ok) {
+        console.log(data.context)
+        setResponseMessage(data.context.questions)
+      } else {
+        setResponseMessage([`Something went wrong: ${data}`])
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      setResponseMessage(['Error submitting data'])
+    }
+  }
+
+  const handleReset = () => {
+    setUserInput('')
+    setSubmitted(false)
+  }
+
+  useEffect(() => {
+    if (bpmnData) {
+      setIsModalOpen(true)
+    }
+  }, [bpmnData])
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <>
+      <Head>
+        <title>Idea to Process Homepage</title>
+        <meta
+          name="description"
+          content="Welcome to the Idea to Process homepage."
         />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+      </Head>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+      <main className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100 gap-4">
+        <header className="text-center">
+          <h1 className="text-5xl font-bold">Welcome to Idea to Process</h1>
+          <p className="mt-2 mb-4 text-lg text-gray-600">
+            Lets turn your idea into a (business) process (model).
+          </p>
+        </header>
+        {isModalOpen ? (
+          <section>
+            <BpmnModal
+              diagramXml={bpmnData}
+              messages={coreMessages}
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+          </section>
+        ) : (
+          <section className="w-[95%]">
+            {submitted ? (
+              <ContextChat
+                questions={responseMessage}
+                setAdditionalContext={setAdditionalContext}
+                submitted={submitted}
+                handleContextSubmit={handleSubmit}
+                bpmnData={bpmnData}
+              />
+            ) : (
+              <RequirementInput
+                userInput={userInput}
+                setUserInput={setUserInput}
+                submitted={submitted}
+                handleRequirementSubmit={handleStructuredSubmit}
+              />
+            )}
+            <div className="flex flex-col items-center mt-8">
+              <Button onClick={handleReset}>Reset</Button>
+            </div>
+          </section>
+        )}
+
+        <footer className="mt-auto">
+          <p className="text-gray-500">&copy; 2024 Idea to Process</p>
+        </footer>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    </>
+  )
 }
+
+export default HomePage
