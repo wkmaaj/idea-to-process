@@ -1,0 +1,14 @@
+{
+  "css.lint.unknownAtRules": "ignore",
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "workbench.colorCustomizations": {
+    // "activityBar.background": "#00AA00",
+    // "icon.foreground": "#ff0000"
+  }
+  //   "workbench.colorTheme": "Default Dark Modern"
+}
