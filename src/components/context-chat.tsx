@@ -37,7 +37,6 @@ const ContextChat: React.FC<ContextChatProps> = ({
   }
 
   useEffect(() => {
-    console.log(messages)
     setCurrentQuestion(questions.shift()!)
     if (questions.length === 0) {
       setAdditionalContext(messages)
