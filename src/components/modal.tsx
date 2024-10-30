@@ -26,6 +26,7 @@ const Modal: React.FC<ModalProps> = ({
           onClose()
         }
       }}
+      role="outerDiv"
     >
       <div
         className="bg-white rounded-lg shadow-lg p-6 w-[92.5%] h-[92.5%] max-h-screen overflow-y-auto relative"

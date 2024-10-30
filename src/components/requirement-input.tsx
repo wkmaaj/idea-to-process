@@ -28,6 +28,7 @@ const RequirementInput: React.FC<RequirementInputProps> = ({
             handleSubmit()
           }}
           className="flex flex-col items-center mt-4 space-y-4"
+          role="form"
         >
           <Input
             value={userInput}
