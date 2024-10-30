@@ -25,8 +25,7 @@ const HistoryTable: React.FC<Omit<TableProps<IdeasDocumentType>, 'columns'>> = (
     { header: 'Requirement', accessorKey: 'requirement' },
     {
       header: 'Category',
-      accessorKey: 'category',
-      cell: () => 'TBI'
+      accessorKey: 'category'
     },
     { header: 'Version', accessorKey: 'version' },
     {
@@ -68,6 +67,8 @@ const HistoryTable: React.FC<Omit<TableProps<IdeasDocumentType>, 'columns'>> = (
           buttonColor="bg-green-600"
           buttonText="View"
           closeOnOutClick={true}
+          category={selectedRow.category}
+          isHistoryPage={true}
         />
       )}
     </>

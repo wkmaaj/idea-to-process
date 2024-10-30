@@ -43,7 +43,7 @@ export const POST = async (req: Request) => {
 
     const document: IdeasDocumentType = {
       requirement,
-      category: 'To be implemented',
+      category: body.category,
       context: body.context,
       bpmnXml: body.bpmnXml,
       version,
