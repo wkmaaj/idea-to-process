@@ -5,6 +5,7 @@ import { CornerDownLeft, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction, useState } from 'react'
 import BpmnVisualizer from './bpmn-visualizer'
+import CategoryDropdown from './category-dropdown'
 import CoreMessageTable from './core-message-table'
 import Modal from './modal'
 import { Button } from './ui'
@@ -18,6 +19,8 @@ type BpmnModalProps = {
   buttonText?: string
   buttonColor?: string
   closeOnOutClick?: boolean
+  category?: string
+  isHistoryPage?: boolean
 }
 
 const BpmnModal: React.FC<BpmnModalProps> = ({
@@ -28,9 +31,12 @@ const BpmnModal: React.FC<BpmnModalProps> = ({
   showHeading = true,
   buttonText = 'Open Modal',
   buttonColor = 'bg-blue-500',
-  closeOnOutClick = false
+  closeOnOutClick = false,
+  category = '',
+  isHistoryPage = false
 }) => {
   const [data, setData] = useState<CoreMessageType[]>(messages)
+  const [selectedCategory, setSelectedCategory] = useState<string>(category)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -62,6 +68,7 @@ const BpmnModal: React.FC<BpmnModalProps> = ({
         },
         body: JSON.stringify({
           context: data,
+          category: selectedCategory || 'To be implemented',
           bpmnXml: diagramXml
         })
       })
@@ -69,7 +76,12 @@ const BpmnModal: React.FC<BpmnModalProps> = ({
       if (!response.ok) {
         throw new Error('Failed to save data')
       }
-      router.push('/history')
+      if (isHistoryPage) {
+        setIsModalOpen(false)
+        window.location.reload()
+      } else {
+        router.push('/history')
+      }
     } catch (error) {
       console.error('Error saving data:', error)
       router.push('/error')
@@ -105,6 +117,12 @@ const BpmnModal: React.FC<BpmnModalProps> = ({
             <CoreMessageTable
               data={data}
               onDataUpdate={handleDataUpdate}
+            />
+          </div>
+          <div className="flex justify-center">
+            <CategoryDropdown
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
             />
           </div>
           <div className="flex justify-end">

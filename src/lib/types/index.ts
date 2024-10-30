@@ -43,5 +43,6 @@ export type TableProps<T> = {
 
 export type RequestBody = {
   context: { role: string; content: string }[]
+  category: string
   bpmnXml: string
 }

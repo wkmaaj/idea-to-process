@@ -37,7 +37,6 @@ const ContextChat: React.FC<ContextChatProps> = ({
   }
 
   useEffect(() => {
-    console.log(messages)
     setCurrentQuestion(questions.shift()!)
     if (questions.length === 0) {
       setAdditionalContext(messages)
@@ -86,6 +85,7 @@ const ContextChat: React.FC<ContextChatProps> = ({
               e.preventDefault()
               handleSubmit()
             }}
+            role="answerQuestionForm"
           >
             <div>
               <Textarea
@@ -117,6 +117,7 @@ const ContextChat: React.FC<ContextChatProps> = ({
               handleContextSubmit()
             }}
             className="flex flex-col items-center mt-4 space-y-4"
+            role="submitContextForm"
           >
             <Button
               type="submit"
