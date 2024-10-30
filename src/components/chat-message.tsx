@@ -8,9 +8,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ role, content }) => (
     <CardContent
       className={`p-6 text-sm rounded-lg ${
         role === 'Assistant' && 'bg-green-400'
-      }`}
+      } ${role === 'User' && 'text-right ml-auto'}`}
     >
-      <strong>{role}:</strong> <Markdown content={content} />
+      <Markdown content={content} />
     </CardContent>
   </Card>
 )
