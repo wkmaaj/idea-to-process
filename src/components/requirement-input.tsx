@@ -13,7 +13,7 @@ const RequirementInput: React.FC<RequirementInputProps> = ({
   userInput,
   setUserInput,
   submitted,
-  handleRequirementSubmit: handleSubmit
+  handleRequirementSubmit
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -25,7 +25,7 @@ const RequirementInput: React.FC<RequirementInputProps> = ({
             // default behavior of form submission reloads the page and processes the input data
             e.preventDefault()
             setIsLoading(true)
-            handleSubmit()
+            handleRequirementSubmit()
           }}
           className="flex flex-col items-center mt-4 space-y-4"
           role="form"
