@@ -111,10 +111,24 @@ brew services stop ollama
 ## TODO
 
 - Fine tune the prompt provided to the LLM to generate more complex BPMN XMLs.
+  - Look into adding the fact that you want to use cammunda (modeler) to the prompt for generating BPMN.
 - Add a regenerate button to display modal which would send a new request to the LLM.
 - Clean up [Home](http://localhost:3000) page to reset when a user exits out of the modal.
-- Add tests.
 - Add pagination to [History](http://localhost:3000/history) table.
+
+### Preparation for Job
+
+Look into the following technologies and methodologies:
+
+- [Turborepo](https://turbo.build/repo/docs)
+- [Next.js v15](https://nextjs.org/docs)
+- [Drizzle](https://orm.drizzle.team/)
+- [tRPC](https://trpc.io/docs/getting-started)
+- [Postgre](https://www.postgresql.org/)
+- [Keycloack](https://www.keycloak.org/)
+- [Auth.js | Authentication for the Web](https://authjs.dev)
+- how to manage an agile project -> scrum
+- solution architecture -> read requirement and design the solution
 
 ## Author
 
